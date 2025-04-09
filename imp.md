@@ -128,3 +128,19 @@ kubectl create service nodeport nginx --tcp=80:80 --node-port=30080 --dry-run=cl
 
 Recommendations
 Both the above commands have their own challenges. While one cannot accept a selector, the other cannot accept a node port. It is recommended to use the kubectl expose command. If you need to specify a node port, generate a definition file using the same command and manually input the node port before creating the service.
+
+
+## Output Formats for kubectl
+
+The default output format for all kubectl commands is human-readable plain text. The -o flag allows you to output the details in several different formats:
+
+```bash
+kubectl [command] [TYPE] [NAME] -o <output_format>
+```
+
+Commonly used formats include:
+
+- **o json**: Output a JSON formatted API object.
+- **o name**: Print only the resource name and nothing else.
+- **o wide**: Output in plain text format with additional information.
+- **o yaml**: Output a YAML formatted API object.
