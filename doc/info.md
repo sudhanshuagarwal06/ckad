@@ -68,6 +68,7 @@ spec:
 ```
 
 ## Replication Controller
+
 A ReplicationController ensures that a specified number of Pod replicas are running at any one time, making sure that a Pod or a homogeneous set of Pods is always up and available.
 
 ### Example Replication Controller Manifest
@@ -99,13 +100,14 @@ spec:
 A ReplicaSet's purpose is to maintain a stable set of replica Pods running at any given time, often used to guarantee the availability of a specified number of identical Pods.
 
 ## Scale the ReplicaSet
+
 To scale the ReplicaSet, use the following command:
 
 ```bash
 kubectl scale replicaset <replicaset_name> --replicas=<desired_number>
 ```
 
-Example ReplicaSet Manifest
+### Example ReplicaSet Manifest
 
 ```yaml
 apiVersion: apps/v1
@@ -163,7 +165,6 @@ A Deployment manages a set of Pods to run an application workload, usually one t
 ### Use Cases for Deployments
 
 Typical use cases for Deployments include:
-
 - **Rollout a ReplicaSet**: Create a Deployment to rollout a ReplicaSet. The ReplicaSet creates Pods in the background. Check the status of the rollout to see if it succeeds or not.
 - **Update Pods**: Declare the new state of the Pods by updating the `PodTemplateSpec` of the Deployment. A new ReplicaSet is created, and the Deployment manages moving the Pods from the old ReplicaSet to the new one at a controlled rate. Each new ReplicaSet updates the revision of the Deployment.
 - **Rollback**: Rollback to an earlier Deployment revision if the current state of the Deployment is not stable. Each rollback updates the revision of the Deployment.
@@ -199,14 +200,17 @@ spec:
 ```
 
 ## Namespaces
+
 In Kubernetes, namespaces provide a mechanism for isolating groups of resources within a single cluster. Names of resources need to be unique within a namespace but not across namespaces. Namespace-based scoping is applicable only for namespaced objects (e.g., Deployments, Services) and not for cluster-wide objects (e.g., StorageClass, Nodes, PersistentVolumes).
 
 Namespaces are a way to divide cluster resources between multiple users (via resource quota). It is not necessary to use multiple namespaces to separate slightly different resources, such as different versions of the same software; use labels to distinguish resources within the same namespace.
 
 ## Overriding Container Commands
+
 When you create a Pod in Kubernetes, you can define a command and arguments for the container(s) to override the default `ENTRYPOINT` and `CMD` specified in the container image.
 
 ### Example Pod Manifest with Command and Arguments
+
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -221,14 +225,13 @@ spec:
 ```
 
 Breakdown:
-
 - **command**: This overrides the `ENTRYPOINT` in the container image. In this case, it's `["sh", "-c"]`, telling the container to run a shell command.
 - **args**: These are the arguments passed to the command. Here, it's a single shell command: `echo Hello from the Pod! && sleep 3600`.
 - If `command` is omitted, the image’s default `ENTRYPOINT` is used. If `args` is omitted, the image’s default `CMD` is used.
 
 ## Defining Environment Variables for Containers
-When you create a Pod, you can set environment variables for the containers that run in the Pod. To set environment variables, include the `env` or `envFrom` field in the configuration file. The `env` and `envFrom` fields have different effects:
 
+When you create a Pod, you can set environment variables for the containers that run in the Pod. To set environment variables, include the `env` or `envFrom` field in the configuration file. The `env` and `envFrom` fields have different effects:
 - **env**: Allows you to set environment variables for a container, specifying a value directly for each variable that you name.
 
 ### Example Pod Manifest with Environment Variables
@@ -286,6 +289,7 @@ kubectl create configmap <configmap_name> --from-literal=<key>=<value> --from-li
 ```
 
 ### Creating a ConfigMap from a File
+
 ```yaml
 apiVersion: v1
 kind: ConfigMap
@@ -298,6 +302,7 @@ data:
 ```
 
 ### Using ConfigMap in a Pod
+
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -314,6 +319,7 @@ spec:
 ```
 
 ### Example of Using ConfigMap Key Reference
+
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -350,16 +356,13 @@ data:
 You can also create a Secret from the command line:
 
 ```bash
-kubectl create secret generic database-credentials \
---from-literal=username=username \
---from-literal=password=password
+kubectl create secret generic database-credentials --from-literal=username=username --from-literal=password=password
 ```
 
 ## Types of Kubernetes Secrets
 
 Kubernetes supports several types of secrets:
-
-- **Service Account Token Secrets: Stores a token credential that identifies a service account.
+- **Service Account Token Secrets**: Stores a token credential that identifies a service account.
 - **Docker Config Secrets**: Stores credentials for accessing a container image registry.
 - **Basic Authentication Secrets**: Stores credentials needed for basic authentication.
 - **SSH Authentication Secrets**: Stores data used in SSH authentication.
@@ -390,6 +393,7 @@ spec:
 ```
 
 ## Adding Capabilities
+
 Here is a configuration file for a Pod that runs one Container and adds the NET_ADMIN and SYS_TIME capabilities:
 
 ```yaml
@@ -426,7 +430,7 @@ Service accounts can be used in scenarios such as:
 - Authenticating to a private image registry using an imagePullSecret.
 - Allowing external services to communicate with the Kubernetes API server.
 
-Practical Implementation
+### Practical Implementation
 
 1. **Creating Service Accounts**: Use the Kubernetes command-line interface (kubectl) to create Service Accounts within the cluster, specifying metadata such as labels or annotations if needed.
 
@@ -445,7 +449,7 @@ Creating Service Accounts:
 
 2. **Granting Permissions**: Define roles and role bindings to grant permissions to Service Accounts, specifying the actions and resources they are allowed to access within the cluster.
 
-### ROLE :
+#### ROLE :
 
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -459,7 +463,7 @@ rules:
       verbs: ["get", "create", "delete", list"]
 ```
 
-### ROLE-BINDING :
+#### ROLE-BINDING :
 
 ```yaml
 apiVersion: rbac.authorization.k8s.io/v1
@@ -479,7 +483,7 @@ roleRef:
 
 3. **Associating Service Accounts with Pods**: Configure pods to use specific Service Accounts by referencing their names in pod specifications or deployment manifests.
 
-### POD:
+#### POD :
 
 ```yaml
 apiVersion: v1
@@ -503,6 +507,7 @@ kubectl create token <serviceaccount_name>
 ```
 
 ## Resource Management for Pods and Containers
+
 When you specify a Pod, you can optionally specify how much of each resource a container needs. The most common resources to specify are CPU and memory (RAM).
 
 When you specify the resource request for containers in a Pod, the kube-scheduler uses this information to decide which node to place the Pod on. The kubelet enforces resource limits so that the running container does not exceed the specified limits.
@@ -532,6 +537,7 @@ spec:
 ```
 
 ## Taints and Tolerations
+
 Taints allow a node to repel a set of Pods, while tolerations are applied to Pods to allow the scheduler to schedule them on nodes with matching taints. Taints and tolerations work together to ensure that Pods are not scheduled onto inappropriate nodes.
 
 ### Taint Types
@@ -540,10 +546,13 @@ Taints allow a node to repel a set of Pods, while tolerations are applied to Pod
 - **PreferNoSchedule**: A "soft" version of NoSchedule; the control plane will try to avoid placing a Pod that does not tolerate the taint on the node, but it is not guaranteed.
 
 ### Example of Tainting a Node
+
 ```bash
 kubectl taint nodes node1 key1=value1:NoSchedule
 ```
+
 ### Example Pod with Tolerations
+
 ```yaml
 apiVersion: v1
 kind: Pod
@@ -564,10 +573,57 @@ spec:
 ```
 
 ### Untainting a Node
+
 To remove a taint from a node, use the following command:
 ```bash
 kubectl taint nodes <node-name> <taint-key>=<taint-value>:<taint-effect>-
 ```
 
+Node Selector: nodeSelector is the simplest recommended form of node selection constraint. You can add the nodeSelector field to your Pod specification and specify the node labels you want the target node to have. Kubernetes only schedules the Pod onto nodes that have each of the labels you specify.
+
+kubectl label nodes <node_name> <label-key>=<label-value>
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    imagePullPolicy: IfNotPresent
+  nodeSelector:
+    <label-key>=<label-value>
 
 
+Node affinity: Node affinity is conceptually similar to nodeSelector, allowing you to constrain which nodes your Pod can be scheduled on based on node labels. There are two types of node affinity:
+
+- requiredDuringSchedulingIgnoredDuringExecution: The scheduler can't schedule the Pod unless the rule is met. This functions like nodeSelector, but with a more expressive syntax.
+- preferredDuringSchedulingIgnoredDuringExecution: The scheduler tries to find a node that meets the rule. If a matching node is not available, the scheduler still schedules the Pod.
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: with-node-affinity
+spec:
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: topology.kubernetes.io/zone
+            operator: In
+            values:
+            - antarctica-east1
+            - antarctica-west1
+      preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 1
+        preference:
+          matchExpressions:
+          - key: another-node-label-key
+            operator: In
+            values:
+            - another-node-label-value
+  containers:
+  - name: with-node-affinity
+    image: registry.k8s.io/pause:3.8
