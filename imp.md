@@ -1,5 +1,3 @@
-# Kubernetes Service Naming and Imperative Commands
-
 ## Understanding Kubernetes Service Naming
 
 In a Kubernetes cluster, services are identified using fully qualified domain names (FQDNs). For example, the FQDN `dev.svc.cluster.local` refers to a service named `dev` that is running in the `default` namespace. The general format for an FQDN in Kubernetes is: <service>.<namespace>.svc.cluster.local
@@ -32,9 +30,7 @@ kubectl run nginx --image=nginx --dry-run=client -o yaml > nginx-pod.yaml
 
 This command will generate a file named nginx-pod.yaml containing the definition of an Nginx pod, which you can then edit and apply as required.
 
-# Kubernetes Pod, Deployment, and Service Management
-
-## Pod Management
+## Kubernetes Pod Management
 
 ### Create an NGINX Pod
 
@@ -51,7 +47,7 @@ To generate a Pod manifest YAML file without creating it, use the --dry-run opti
 kubectl run nginx --image=nginx --dry-run=client -o yaml
 ```
 
-## Deployment Management
+## Kubernetes Deployment Management
 
 ### Create a Deployment
 
@@ -95,7 +91,7 @@ kubectl create deployment nginx --image=nginx --dry-run=client -o yaml > nginx-d
 
 You can then update the YAML file with the desired number of replicas or any other fields before creating the deployment.
 
-## Service Management
+## Kubernetes Service Management
 
 ### Create a ClusterIP Service
 
