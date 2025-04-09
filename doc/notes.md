@@ -1,27 +1,21 @@
+# Important Points
+
 ## Understanding Kubernetes Service Naming
-
 In a Kubernetes cluster, services are identified using fully qualified domain names (FQDNs). For example, the FQDN `dev.svc.cluster.local` refers to a service named `dev` that is running in the `default` namespace. The general format for an FQDN in Kubernetes is: <service>.<namespace>.svc.cluster.local
-
 This naming convention allows for easy service discovery within the cluster using the internal Kubernetes DNS system.
 
 ## Imperative Commands in Kubernetes
-
 While most interactions with Kubernetes are done declaratively through resource definition files, imperative commands can be very useful for quick, one-time tasks and for generating templates for resource definitions. This can save you significant time, especially during exams or when you need to prototype quickly.
 
 ### Helpful Options
-
 When using imperative commands, two options can enhance your workflow:
-
-- `--dry-run=client`: This option allows you to test your command without actually creating the resource. It verifies whether the resource can be created and checks the correctness of your command.
-  
-- `-o yaml`: This option outputs the resource definition in YAML format, which is the standard format for Kubernetes resource definitions.
+- **--dry-run=client**: This option allows you to test your command without actually creating the resource. It verifies whether the resource can be created and checks the correctness of your command.
+- **-o yaml**: This option outputs the resource definition in YAML format, which is the standard format for Kubernetes resource definitions.
 
 ### Generating Resource Definitions
-
 You can combine these options with Linux output redirection to quickly generate a resource definition file. This approach allows you to create a template that you can modify as needed, rather than starting from scratch.
 
 ### Example Command
-
 To create a YAML definition for an Nginx pod without actually deploying it, you can use the following command:
 
 ```bash
@@ -35,7 +29,6 @@ This command will generate a file named nginx-pod.yaml containing the definition
 ### Create an NGINX Pod
 
 To create a simple NGINX Pod, use the following command:
-
 ```bash
 kubectl run nginx --image=nginx
 ```
