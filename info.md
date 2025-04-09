@@ -26,7 +26,7 @@ A Kubernetes cluster consists of two types of nodes:
 - **Master Node**: Hosts the Kubernetes control plane and manages the cluster, including scheduling and scaling applications and maintaining the state of the cluster.
 - **Worker Nodes**: Responsible for running the containers and executing the workloads.
 
-![Master and Worker Nodes](master_worker_node.PNG)
+![Master and Worker Nodes](master_wroker_node.PNG)
 
 ## What Is A Kubernetes Cluster?
 
@@ -154,21 +154,27 @@ metadata:
   labels:
     key1: value1
     key2: value2
+```
 
+## Deployment
 
+A Deployment manages a set of Pods to run an application workload, usually one that doesn't maintain state. 
 
+### Use Cases for Deployments
 
+Typical use cases for Deployments include:
 
-Deployment: A Deployment manages a set of Pods to run an application workload, usually one that doesn't maintain state.
-Use Case: The following are typical use cases for Deployments:
-Create a Deployment to rollout a ReplicaSet. The ReplicaSet creates Pods in the background. Check the status of the rollout to see if it succeeds or not.
-Declare the new state of the Pods by updating the PodTemplateSpec of the Deployment. A new ReplicaSet is created and the Deployment manages moving the Pods from the old ReplicaSet to the new one at a controlled rate. Each new ReplicaSet updates the revision of the Deployment.
-Rollback to an earlier Deployment revision if the current state of the Deployment is not stable. Each rollback updates the revision of the Deployment.
-Scale up the Deployment to facilitate more load.
-Pause the rollout of a Deployment to apply multiple fixes to its PodTemplateSpec and then resume it to start a new rollout.
-Use the status of the Deployment as an indicator that a rollout has stuck.
-Clean up older ReplicaSets that you don't need anymore.
+- **Rollout a ReplicaSet**: Create a Deployment to rollout a ReplicaSet. The ReplicaSet creates Pods in the background. Check the status of the rollout to see if it succeeds or not.
+- **Update Pods**: Declare the new state of the Pods by updating the `PodTemplateSpec` of the Deployment. A new ReplicaSet is created, and the Deployment manages moving the Pods from the old ReplicaSet to the new one at a controlled rate. Each new ReplicaSet updates the revision of the Deployment.
+- **Rollback**: Rollback to an earlier Deployment revision if the current state of the Deployment is not stable. Each rollback updates the revision of the Deployment.
+- **Scale Up**: Scale up the Deployment to facilitate more load.
+- **Pause and Resume Rollout**: Pause the rollout of a Deployment to apply multiple fixes to its `PodTemplateSpec` and then resume it to start a new rollout.
+- **Monitor Rollout Status**: Use the status of the Deployment as an indicator that a rollout has stuck.
+- **Cleanup**: Clean up older ReplicaSets that you don't need anymore.
 
+### Example Deployment Manifest
+
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -190,29 +196,18 @@ spec:
         image: nginx:1.14.2
         ports:
         - containerPort: 80
+```
 
+## Namespaces
+In Kubernetes, namespaces provide a mechanism for isolating groups of resources within a single cluster. Names of resources need to be unique within a namespace but not across namespaces. Namespace-based scoping is applicable only for namespaced objects (e.g., Deployments, Services) and not for cluster-wide objects (e.g., StorageClass, Nodes, PersistentVolumes).
 
+Namespaces are a way to divide cluster resources between multiple users (via resource quota). It is not necessary to use multiple namespaces to separate slightly different resources, such as different versions of the same software; use labels to distinguish resources within the same namespace.
 
-Note: The default output format for all kubectl commands is the human-readable plain-text format. The -o flag allows us to output the details in several different formats.
+## Overriding Container Commands
+When you create a Pod in Kubernetes, you can define a command and arguments for the container(s) to override the default `ENTRYPOINT` and `CMD` specified in the container image.
 
-kubectl [command] [TYPE] [NAME] -o <output_format>
-
-Here are some of the commonly used formats:
--o jsonOutput a JSON formatted API object.
--o namePrint only the resource name and nothing else.
--o wideOutput in the plain-text format with any additional information.
--o yamlOutput a YAML formatted API object.
-
-
-NameSpaces: In Kubernetes, namespaces provide a mechanism for isolating groups of resources within a single cluster. Names of resources need to be unique within a namespace, but not across namespaces. Namespace-based scoping is applicable only for namespaced objects (e.g. Deployments, Services, etc.) and not for cluster-wide objects (e.g. StorageClass, Nodes, PersistentVolumes, etc.)
-Namespaces are a way to divide cluster resources between multiple users (via resource quota).
-It is not necessary to use multiple namespaces to separate slightly different resources, such as different versions of the same software: use labels to distinguish resources within the same namespace.
-
-
-
-Note: When you create a Pod in Kubernetes, you can define a command and arguments for the container(s) to override the default ENTRYPOINT and CMD specified in the container image.
-Here’s how you do it in a Pod manifest YAML:
-
+### Example Pod Manifest with Command and Arguments
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -223,18 +218,22 @@ spec:
       image: busybox
       command: ["sh", "-c"]
       args: ["echo Hello from the Pod! && sleep 3600"]
+```
 
 Breakdown:
-command: This overrides the ENTRYPOINT in the container image. In this case, it's ["sh", "-c"], telling the container to run a shell command.
-args: These are the arguments passed to the command. Here, it's a single shell command: echo Hello from the Pod! && sleep 3600.
-If command is omitted, the image’s default ENTRYPOINT is used. If args is omitted, the image’s default CMD is used.
 
+- **command**: This overrides the `ENTRYPOINT` in the container image. In this case, it's `["sh", "-c"]`, telling the container to run a shell command.
+- **args**: These are the arguments passed to the command. Here, it's a single shell command: `echo Hello from the Pod! && sleep 3600`.
+- If `command` is omitted, the image’s default `ENTRYPOINT` is used. If `args` is omitted, the image’s default `CMD` is used.
 
-Define an environment variable for a container
-When you create a Pod, you can set environment variables for the containers that run in the Pod. To set environment variables, include the env or envFrom field in the configuration file. The env and envFrom fields have different effects.
+## Defining Environment Variables for Containers
+When you create a Pod, you can set environment variables for the containers that run in the Pod. To set environment variables, include the `env` or `envFrom` field in the configuration file. The `env` and `envFrom` fields have different effects:
 
-env: allows you to set environment variables for a container, specifying a value directly for each variable that you name.
+- **env**: Allows you to set environment variables for a container, specifying a value directly for each variable that you name.
 
+### Example Pod Manifest with Environment Variables
+
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -250,8 +249,36 @@ spec:
       value: "Hello from the environment"
     - name: DEMO_FAREWELL
       value: "Such a sweet sorrow"
+```
 
-envFrom: allows you to set environment variables for a container by referencing either a ConfigMap or a Secret. When you use envFrom, all the key-value pairs in the referenced ConfigMap or Secret are set as environment variables for the container. You can also specify a common prefix string.
+- **envFrom**: Allows you to set environment variables for a container by referencing either a ConfigMap or a Secret. When you use `envFrom`, all the key-value pairs in the referenced ConfigMap or Secret are set as environment variables for the container. You can also specify a common prefix string.
+- 
+### Example Pod Manifest Using envFrom
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: envar-demo-from-configmap
+spec:
+  containers:
+  - name: envar-demo-container
+    image: gcr.io/google-samples/hello-app:2.0
+    envFrom:
+    - configMapRef:
+        name: my-config
+    - secretRef:
+        name: my-secret
+```
+
+In this example, all key-value pairs from the `my-config` ConfigMap and `my-secret` Secret will be set as environment variables in the `envar-demo-container`.
+
+
+
+
+
+
+
 
 
 ConfigMaps: A ConfigMap is an API object used to store non-confidential data in key-value pairs. Pods can consume ConfigMaps as environment variables, command-line arguments, or as configuration files in a volume.
