@@ -10,11 +10,11 @@ When you create a Pod in Kubernetes, you can define a command and arguments for 
 apiVersion: v1
 kind: Pod
 metadata:
-  name: example-pod
+  name: examplePod
 spec:
   containers:
-    - name: example-container
-      image: busybox
+    - name: nginx
+      image: nginx
       command: ["sh", "-c"]
       args: ["echo Hello from the Pod! && sleep 3600"]
 ```
@@ -35,18 +35,16 @@ When you create a Pod, you can set environment variables for the containers that
 apiVersion: v1
 kind: Pod
 metadata:
-  name: envar-demo
-  labels:
-    purpose: demonstrate-envars
+  name: examplePod
 spec:
   containers:
-  - name: envar-demo-container
-    image: gcr.io/google-samples/hello-app:2.0
+  - name: nginx
+    image: nginx
     env:
-    - name: DEMO_GREETING
-      value: "Hello from the environment"
-    - name: DEMO_FAREWELL
-      value: "Such a sweet sorrow"
+    - name: FIRST_ENC
+      value: "first environment"
+    - name: SECOND_ENV
+      value: "second environment"
 ```
 
 - **envFrom**: Allows you to set environment variables for a container by referencing either a ConfigMap or a Secret. When you use `envFrom`, all the key-value pairs in the referenced ConfigMap or Secret are set as environment variables for the container. You can also specify a common prefix string.
@@ -57,11 +55,11 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: envar-demo-from-configmap
+  name: examplePod
 spec:
   containers:
-  - name: envar-demo-container
-    image: gcr.io/google-samples/hello-app:2.0
+  - name: nginx
+    image: nginx
     envFrom:
     - configMapRef:
         name: my-config
@@ -89,7 +87,7 @@ kubectl create configmap <configmap_name> --from-literal=<key>=<value> --from-li
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: demo-config
+  name: exampleConfigMap
 data:
   database_host: "192.168.0.1"
   debug_mode: "1"
@@ -102,15 +100,15 @@ data:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: demo-pod
+  name: examplePod
 spec:
   containers:
-    - name: app
+    - name: nginx
       command: ["/bin/sh", "-c", "printenv"]
-      image: busybox:latest
+      image: nginx
       envFrom:
         - configMapRef:
-            name: demo-config
+            name: exampleConfigMap
 ```
 
 ### Example of Using ConfigMap Key Reference
@@ -119,17 +117,17 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: env-configmap
+  name: examplePod
 spec:
   containers:
-  - name: envars-test-container
+  - name: nginx
     image: nginx
     env:
     - name: CONFIGMAP_USERNAME
       valueFrom:
         configMapKeyRef:
-          name: myconfigmap
-          key: username
+          name: exampleConfigMap
+          key: database_host
 ```
 
 ## Secrets
@@ -142,7 +140,7 @@ A Secret is an object that contains a small amount of sensitive data such as a p
 apiVersion: v1
 kind: Secret
 metadata:
- name: my-secret
+ name: exampleSecret
 type: Opaque
 data:
  password: my-awesome-password
@@ -174,8 +172,7 @@ A security context defines privilege and access control settings for a Pod or Co
 apiVersion: v1
 kind: Pod
 metadata:
-  name: ubuntu-sleeper
-  namespace: default
+  name: examplePod
 spec:
   securityContext:
     runAsUser: 1010
@@ -183,8 +180,8 @@ spec:
   - command:
     - sleep
     - "4800"
-    image: ubuntu
-    name: ubuntu-sleeper
+    image: nginx
+    name: nginx
 ```
 
 ## Adding Capabilities
@@ -195,15 +192,14 @@ Here is a configuration file for a Pod that runs one Container and adds the NET_
 apiVersion: v1
 kind: Pod
 metadata:
-  name: ubuntu-sleeper
-  namespace: default
+  name: examplePod
 spec:
   containers:
   - command:
     - sleep
     - "4800"
-    image: ubuntu
-    name: ubuntu-sleeper
+    image: nginx
+    name: nginx
     securityContext:
       capabilities:
         add: ["SYS_TIME", "NET_ADMIN"]
@@ -237,8 +233,7 @@ kubectl create serviceaccount <serviceaccount_name>
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: my-serviceaccount
-  namespace: my-namespace
+  name: exampleServiceAccount
 Creating Service Accounts:
 ```
 
@@ -250,8 +245,7 @@ Creating Service Accounts:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata: 
-    namespace: default
-    name: service-account-role
+    name: exampleRole
 rules:
     - apiGroups: [""]
       resources: ["pods"]
@@ -264,15 +258,14 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-    name: mysa-rolebinding
-    namespace: default
+    name: exampleRoleBinding
 subjects:
     - kind: ServiceAccount
-      name: my-sa
+      name: exampleServiceAccount
       apiGroup: ""
 roleRef:
     kind: Role
-    name: service-account-role
+    name: exampleRole
     apiGroup: rbac.authorization.k8s.io
 ```
 
@@ -284,13 +277,12 @@ roleRef:
 apiVersion: v1
 kind: Pod
 metadata: 
-    name: 'my-pod'
-    namespace: default
+    name: examplePod
 spec:
     containers:
-      - name: first-container
-        image: vimal13/apache-webserver-php
-    serviceAccountName: my-sa
+      - name: nginx
+        image: nginx
+    serviceAccountName: exampleServiceAccount
 ```
 
 4. ***Testing Authentication and Authorization***: Verify that pods can authenticate with the Kubernetes API server using their Service Accounts and that they have the necessary permissions to perform desired operations within the cluster.
@@ -298,7 +290,7 @@ spec:
 ### Generate toke for serviceaccount
 
 ```bash
-kubectl create token <serviceaccount_name>
+kubectl create token exampleServiceAccount
 ```
 
 ## Resource Management for Pods and Containers
@@ -313,13 +305,11 @@ When you specify the resource request for containers in a Pod, the kube-schedule
 apiVersion: v1
 kind: Pod
 metadata:
-  name: simple-app
-  labels:
-    name: simple-app
+  name: examplePod
 spec:
   containers:
-    - name: simple-app
-      image: simple-app
+    - name: nginx
+      image: nginx
       ports:
         - containerPort: 8080
       resources:
@@ -352,9 +342,7 @@ kubectl taint nodes node1 key1=value1:NoSchedule
 apiVersion: v1
 kind: Pod
 metadata:
-  name: nginx
-  labels:
-    env: test
+  name: examplePod
 spec:
   containers:
   - name: nginx
@@ -374,14 +362,18 @@ To remove a taint from a node, use the following command:
 kubectl taint nodes <node-name> <taint-key>=<taint-value>:<taint-effect>-
 ```
 
-Node Selector: nodeSelector is the simplest recommended form of node selection constraint. You can add the nodeSelector field to your Pod specification and specify the node labels you want the target node to have. Kubernetes only schedules the Pod onto nodes that have each of the labels you specify.
+### Node Selector 
+NodeSelector is the simplest recommended form of node selection constraint. You can add the nodeSelector field to your Pod specification and specify the node labels you want the target node to have. Kubernetes only schedules the Pod onto nodes that have each of the labels you specify.
 
+```bash
 kubectl label nodes <node_name> <label-key>=<label-value>
+```
 
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: nginx
+  name: examplePod
 spec:
   containers:
   - name: nginx
@@ -389,17 +381,18 @@ spec:
     imagePullPolicy: IfNotPresent
   nodeSelector:
     <label-key>=<label-value>
+```
 
-
-Node affinity: Node affinity is conceptually similar to nodeSelector, allowing you to constrain which nodes your Pod can be scheduled on based on node labels. There are two types of node affinity:
-
+### Node affinity
+Node affinity is conceptually similar to nodeSelector, allowing you to constrain which nodes your Pod can be scheduled on based on node labels. There are two types of node affinity:
 - requiredDuringSchedulingIgnoredDuringExecution: The scheduler can't schedule the Pod unless the rule is met. This functions like nodeSelector, but with a more expressive syntax.
 - preferredDuringSchedulingIgnoredDuringExecution: The scheduler tries to find a node that meets the rule. If a matching node is not available, the scheduler still schedules the Pod.
 
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
-  name: with-node-affinity
+  name: examplePod
 spec:
   affinity:
     nodeAffinity:
@@ -420,5 +413,6 @@ spec:
             values:
             - another-node-label-value
   containers:
-  - name: with-node-affinity
-    image: registry.k8s.io/pause:3.8
+  - name: nginx
+    image: nginx
+```

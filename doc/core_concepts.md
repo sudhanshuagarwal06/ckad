@@ -47,13 +47,13 @@ A Kubernetes Pod is a collection of one or more application containers. The Pod 
 apiVersion: v1
 kind: Pod
 metadata:
-  name: nginx
+  name: examplePod
 spec:
   containers:
   - name: nginx
     image: nginx:1.14.2
     ports:
-    - containerPort: 80
+      - containerPort: 80
 ```
 
 ## Replication Controller
@@ -64,7 +64,7 @@ A ReplicationController ensures that a specified number of Pod replicas are runn
 apiVersion: v1
 kind: ReplicationController
 metadata:
-  name: nginx
+  name: exampleReplicationController
 spec:
   replicas: 3
   selector:
@@ -78,8 +78,6 @@ spec:
       containers:
       - name: nginx
         image: nginx
-        ports:
-        - containerPort: 80
 ```
 
 ## ReplicaSet
@@ -96,10 +94,7 @@ kubectl scale replicaset <replicaset_name> --replicas=<desired_number>
 apiVersion: apps/v1
 kind: ReplicaSet
 metadata:
-  name: frontend
-  labels:
-    app: guestbook
-    tier: frontend
+  name: exampleReplicaSet
 spec:
   replicas: 3  # Modify replicas according to your case
   selector:
@@ -111,8 +106,8 @@ spec:
         tier: frontend
     spec:
       containers:
-      - name: php-redis
-        image: us-docker.pkg.dev/google-samples/containers/gke/gb-frontend:v5
+      - name: nginx
+        image: nginx
 ```
 
 ## Comparison: ReplicaSet vs Replication Controller
@@ -124,19 +119,6 @@ spec:
 | Environment in (production, qa)                  | Environment = production                                      |
 | This selects all resources with key equal to     | This selects all resources with key equal to                  |
 | environment and value equal to production or qa  | environment and value equal to production                     |
-
-## Labels and Selectors
-Labels are key/value pairs that are attached to objects such as Pods. They are intended to specify identifying attributes of objects that are meaningful and relevant to users but do not directly imply semantics to the core system. Labels can be used to organize and select subsets of objects. 
-- Labels can be attached to objects at creation time and subsequently added and modified at any time.
-- Each object can have a set of key/value labels defined, and each key must be unique for a given object.
-
-### Example of Metadata with Labels
-```yaml
-metadata:
-  labels:
-    key1: value1
-    key2: value2
-```
 
 ## Deployment
 A Deployment manages a set of Pods to run an application workload, usually one that doesn't maintain state. 
@@ -156,9 +138,7 @@ Typical use cases for Deployments include:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: nginx-deployment
-  labels:
-    app: nginx
+  name: exampleDeployment
 spec:
   replicas: 3
   selector:
@@ -172,8 +152,6 @@ spec:
       containers:
       - name: nginx
         image: nginx:1.14.2
-        ports:
-        - containerPort: 80
 ```
 
 ## Namespaces

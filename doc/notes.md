@@ -140,7 +140,6 @@ Commonly used formats include:
 
 
 ## Execute a command in a container.
-
 ```bash
 kubectl exec (POD | TYPE/NAME) [-c CONTAINER] [flags] -- COMMAND [args...]
 ```
@@ -169,4 +168,33 @@ kubectl exec (POD | TYPE/NAME) [-c CONTAINER] [flags] -- COMMAND [args...]
   
   # Get output from running 'date' command from the first pod of the service myservice, using the first container by default
   kubectl exec svc/myservice -- date
+```
+
+## Container logs 
+```bash
+kubectl logs [-f] [-p] (POD | TYPE/NAME) [-c CONTAINER]
+```
+
+### Example
+```bash
+# Return snapshot logs from pod nginx with only one container
+  kubectl logs nginx
+  
+  # Return snapshot logs from pod nginx, prefixing each line with the source pod and container name
+  kubectl logs nginx --prefix
+    
+  # Return snapshot logs from pod nginx with multi containers
+  kubectl logs nginx --all-containers=true
+  
+  # Return snapshot logs from all pods in the deployment nginx
+  kubectl logs deployment/nginx --all-pods=true
+  
+  # Return snapshot logs from all containers in pods defined by label app=nginx
+  kubectl logs -l app=nginx --all-containers=true
+      
+  # Return snapshot logs from first container of a job named hello
+  kubectl logs job/hello
+  
+  # Return snapshot logs from container nginx-1 of a deployment named nginx
+  kubectl logs deployment/nginx -c nginx-1
 ```
