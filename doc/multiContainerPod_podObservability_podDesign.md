@@ -167,3 +167,26 @@ spec:
     - containerPort: 80
 ```
 
+## Rolling Update
+To ensure applications remain highly available while continuously delivering new features or fixes, Kubernetes supports rolling updates. This deployment strategy allows you to update applications with zero downtime by gradually replacing existing Pods with new ones.
+
+Kubernetes handles the update by:
+- Scheduling new Pods on available Nodes.
+- Waiting for the new Pods to become ready.
+- Gracefully terminating old Pods only after new ones are up and running.
+
+This ensures that your application stays responsive and available throughout the update process.
+
+```bash
+  # Rollback to the previous deployment
+  kubectl rollout undo deployment/abc
+  
+  # Check the rollout status of a daemonset
+  kubectl rollout status daemonset/foo
+  
+  # Restart a deployment
+  kubectl rollout restart deployment/abc
+  
+  # Restart deployments with the 'app=nginx' label
+  kubectl rollout restart deployment --selector=app=nginx
+```
