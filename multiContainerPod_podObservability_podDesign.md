@@ -1,4 +1,4 @@
-# Multi-Container-Pods, Observability & POD Design
+# Multi-Container-POD, POD-Observability & POD-Design
 
 ## Single Container Pods
 This is the most common use case where a Pod wraps a single container. Kubernetes manages the lifecycle of the Pod rather than the individual container.
