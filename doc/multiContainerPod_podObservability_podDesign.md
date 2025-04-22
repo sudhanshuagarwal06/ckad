@@ -156,18 +156,21 @@ Kubernetes annotations are key-value metadata pairs that you can attach to Kuber
 apiVersion: v1
 kind: Pod
 metadata:
-  name: annotations-demo
+  name: examplePod
   annotations:
     imageregistry: "https://hub.docker.com/"
 spec:
   containers:
   - name: nginx
-    image: nginx:1.14.2
+    image: nginx
     ports:
     - containerPort: 80
 ```
 
-## Rolling Update
+## Kubernetes Deployment Strategies
+Kubernetes deployment strategies determine how changes are introduced into an application running in a cluster. The aim is to update the app while minimizing disruption, ensuring availability, and enabling easy rollback in case of issues. By choosing the right strategy, development teams can manage application changes in a controlled and safe manner.
+
+### Rolling Update
 To ensure applications remain highly available while continuously delivering new features or fixes, Kubernetes supports rolling updates. This deployment strategy allows you to update applications with zero downtime by gradually replacing existing Pods with new ones.
 
 Kubernetes handles the update by:
@@ -189,4 +192,58 @@ This ensures that your application stays responsive and available throughout the
   
   # Restart deployments with the 'app=nginx' label
   kubectl rollout restart deployment --selector=app=nginx
+```
+
+### Blue-Green deployment: 
+Blue-Green deployment in Kubernetes is a strategy that uses two identical environments, "blue" and "green," to deploy new versions of an application with minimal downtime and risk. The "blue" environment hosts the current production version, while "green" houses the new release. Once the "green" environment is tested and verified, traffic is switched from "blue" to "green," making "green" the new production environment. 
+
+### Canary Deployment 
+Canary Deployment is a strategy that allows you to deploy new versions of your application to a small subset of users before rolling it out to everyone. This is typically done by routing a percentage of traffic to the new version while the majority of users continue using the current stable version.
+
+
+## Jobs
+Jobs represent one-off tasks that run to completion and then stop.
+A Job creates one or more Pods and will continue to retry execution of the Pods until a specified number of them successfully terminate. As pods successfully complete, the Job tracks the successful completions. When a specified number of successful completions is reached, the task (ie, Job) is complete. Deleting a Job will clean up the Pods it created. Suspending a Job will delete its active Pods until the Job is resumed again.
+
+A simple case is to create one Job object in order to reliably run one Pod to completion. The Job object will start a new Pod if the first Pod fails or is deleted (for example due to a node hardware failure or a node reboot).
+
+A Job’s type is determined based on the values you assign to the spec.completions and spec.parallelism fields in its manifest. The spec.completions field is only relevant to the Fixed Completion Count Job type, whereas spec.parallelism controls the number of Pods that will run in parallel during the Job.
+
+```yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: exampleJob
+spec:
+  completions: 3
+  backoffLimit: 25 # This is so the job does not quit before it succeeds.
+  template:
+    spec:
+      containers:
+      - name: pi
+        image: ubuntu
+        command: ["expr",  "3", "+", "2"]
+      restartPolicy: Never
+```
+
+## CronJob
+CronJob is meant for performing regular scheduled actions such as backups, report generation, and so on. One CronJob object is like one line of a crontab (cron table) file on a Unix system. It runs a Job periodically on a given schedule, written in Cron format.
+
+CronJobs have limitations and idiosyncrasies. For example, in certain circumstances, a single CronJob can create multiple concurrent Jobs. See the limitations below.
+```yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: exampleCronJob
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: nginx
+            image: nginx
+            command: ["echo", "Hello, Kubernetes!"]
+          restartPolicy: OnFailure
 ```
