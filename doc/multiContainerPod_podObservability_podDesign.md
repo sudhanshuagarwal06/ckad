@@ -195,20 +195,23 @@ This ensures that your application stays responsive and available throughout the
 ```
 
 ### Blue-Green deployment: 
-Blue-Green deployment in Kubernetes is a strategy that uses two identical environments, "blue" and "green," to deploy new versions of an application with minimal downtime and risk. The "blue" environment hosts the current production version, while "green" houses the new release. Once the "green" environment is tested and verified, traffic is switched from "blue" to "green," making "green" the new production environment. 
+Blue-Green Deployment is a strategy that utilizes two identical environments, referred to as "blue" and "green," to facilitate the deployment of new versions of an application with minimal downtime and reduced risk.
+- **Blue Environment**: This environment hosts the current production version of the application.
+- **Green Environment**: This environment is used to deploy and test the new release.
+Once the new version in the green environment has been thoroughly tested and verified, traffic is switched from the blue environment to the green environment, effectively making green the new production environment. This approach allows for quick rollbacks if issues arise, as the blue environment remains intact until the green deployment is confirmed stable.
 
 ### Canary Deployment 
-Canary Deployment is a strategy that allows you to deploy new versions of your application to a small subset of users before rolling it out to everyone. This is typically done by routing a percentage of traffic to the new version while the majority of users continue using the current stable version.
-
+Canary Deployment is a strategy that allows you to release new versions of your application to a small subset of users before a full rollout.
+- **Traffic Routing**: A percentage of traffic is directed to the new version while the majority of users continue using the stable version.
+This approach enables you to monitor the new release for any issues in a controlled manner, allowing for quick adjustments or rollbacks if necessary.
 
 ## Jobs
-Jobs represent one-off tasks that run to completion and then stop.
-A Job creates one or more Pods and will continue to retry execution of the Pods until a specified number of them successfully terminate. As pods successfully complete, the Job tracks the successful completions. When a specified number of successful completions is reached, the task (ie, Job) is complete. Deleting a Job will clean up the Pods it created. Suspending a Job will delete its active Pods until the Job is resumed again.
+In Kubernetes, a Job represents a one-off task that runs to completion and then stops.
+- **Functionality**: A Job creates one or more Pods and will continue to retry execution until a specified number of Pods successfully terminate.
+- **Tracking Success**: As Pods complete successfully, the Job tracks these completions. Once the desired number of successful completions is reached, the Job is considered complete.
+- **Management**: Deleting a Job will clean up the Pods it created, while suspending a Job will delete its active Pods until it is resumed.
 
-A simple case is to create one Job object in order to reliably run one Pod to completion. The Job object will start a new Pod if the first Pod fails or is deleted (for example due to a node hardware failure or a node reboot).
-
-A Job’s type is determined based on the values you assign to the spec.completions and spec.parallelism fields in its manifest. The spec.completions field is only relevant to the Fixed Completion Count Job type, whereas spec.parallelism controls the number of Pods that will run in parallel during the Job.
-
+### Example Job Manifest
 ```yaml
 apiVersion: batch/v1
 kind: Job
@@ -227,9 +230,10 @@ spec:
 ```
 
 ## CronJob
-CronJob is meant for performing regular scheduled actions such as backups, report generation, and so on. One CronJob object is like one line of a crontab (cron table) file on a Unix system. It runs a Job periodically on a given schedule, written in Cron format.
+A CronJob in Kubernetes is designed for performing regular scheduled tasks, such as backups or report generation. It functions similarly to a line in a crontab file on Unix systems, running a Job periodically according to a specified schedule in Cron format.
+**Limitations**: CronJobs have certain limitations, such as the potential for a single CronJob to create multiple concurrent Jobs under specific circumstances.
 
-CronJobs have limitations and idiosyncrasies. For example, in certain circumstances, a single CronJob can create multiple concurrent Jobs. See the limitations below.
+### Example CronJob Manifest
 ```yaml
 apiVersion: batch/v1
 kind: CronJob
